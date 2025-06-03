@@ -32,7 +32,8 @@ SQLITE=True
 ```
 pip install -r requirements.txt
 ```
-В директории converter_webapp:
+В директории converter_webapp выполните миграции и запустите приложение:
 ```
+python manage.py migrate
 python manage.py runserver
 ```
