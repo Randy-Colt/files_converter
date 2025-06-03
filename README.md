@@ -24,7 +24,14 @@ http://127.0.0.1:8000/albums/
 ```
 
 ### Запуск без докера
-В файле example.env установите переменную SQLITE=True
+В файле example.env установите переменную 
+```
+SQLITE=True
+```
+Установите зависимости приложения в виртуальное окружение:
+```
+pip install -r requirements.txt
+```
 В директории converter_webapp:
 ```
 python manage.py runserver
