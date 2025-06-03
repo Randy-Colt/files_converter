@@ -74,7 +74,9 @@ class AlbumExelParser:
             {f'{column}{row_index}': 'Неизвестный вид документации'}
         )
 
-    def get_data_from_file(self) -> tuple[list[dict[str, str | float], set[str], set[str]]]:
+    def get_data_from_file(
+        self
+    ) -> tuple[list[dict[str, str | float], set[str], set[str]]]:
         worksheet = load_workbook(self.file, read_only=True).active
         albums = []
         customers_names = set()
@@ -115,10 +117,13 @@ class AlbumExelParser:
 
 class AlbumDataCreator:
 
-    def __init__(self, album_data: tuple[list[dict[str, str | float], set[str], set[str]]]):
+    def __init__(
+        self,
+        album_data: tuple[list[dict[str, str | float], set[str], set[str]]]
+    ) -> None:
         self.album_data = album_data
 
-    def create_albums(self):
+    def create_albums(self) -> int:
         albums, customers_names, objects_names = self.album_data
         with transaction.atomic():
             customers_map = self.handle_entries_with_name(

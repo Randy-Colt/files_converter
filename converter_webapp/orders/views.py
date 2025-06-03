@@ -20,7 +20,6 @@ class UploadExelView(FormView):
             created_records_num = albums_creator.create_albums()
             return JsonResponse(
                 {
-                    'success': True,
                     'message': 'Файл успешно обработан',
                     'total_records': created_records_num,
                 }, status=201
@@ -28,7 +27,6 @@ class UploadExelView(FormView):
         except ExelParsingError:
             return JsonResponse(
                     {
-                        'success': False,
                         'message': 'Неверно заполнены ячейки в файле',
                         'errors': exel_parser.errors,
                     }, status=400
@@ -36,7 +34,6 @@ class UploadExelView(FormView):
         except Exception:
             return JsonResponse(
                 {
-                    'success': False,
                     'error': 'Попробуйте позже'
                 }, status=500
             )

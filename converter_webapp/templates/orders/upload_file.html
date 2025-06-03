@@ -73,59 +73,57 @@
 {% endblock %}
 
 {% block scripts %}
-  <script>
-    $('#uploadForm').on('submit', function(e) {
+<script>
+  $('#uploadForm').on('submit', function(e) {
     e.preventDefault();
     let $form = $(this);
     let formData = new FormData(this);
 
     $.ajax({
-        url: "{% url 'upload' %}",
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-        },
-        success: function(data) {
-            if (data.success) {
-                $('#successMessage').text(data.message);
-                $('#totalRecords').text(data.total_records);
+      url: "{% url 'upload' %}",
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      headers: {
+        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+      },
+      success: function(data) {
+        $('#successMessage').text(data.message);
+        $('#totalRecords').text(data.total_records);
 
-                let modal = new bootstrap.Modal(document.getElementById('successModal'));
-                modal.show();
+        let modal = new bootstrap.Modal(document.getElementById('successModal'));
+        modal.show();
 
-                $form[0].reset();
-            }
-        },
-        error: function(xhr, status, error) {
-          if (xhr.responseJSON.validation_error) {
-                $('#invalid-fileform').text(xhr.responseJSON.error).show();
-            } else {
-                $('#errorMessage').text(xhr.responseJSON.message || 'Произошла ошибка');
-                let $errorDetails = $('#errorDetails');
-                $errorDetails.empty();
+        $form[0].reset();
+      },
+      error: function(xhr, status, error) {
+        if (xhr.responseJSON.validation_error) {
+          $('#invalid-fileform').text(xhr.responseJSON.error).show();
+        } else {
+          $('#errorMessage').text(xhr.responseJSON.message || 'Произошла ошибка');
+          let $errorDetails = $('#errorDetails');
+          $errorDetails.empty();
 
-                if (xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
-                    let $errorList = $('<ul class="list-group"></ul>');
-                    xhr.responseJSON.errors.forEach(function(error) {
-                        $.each(error, function(field, message) {
-                            let $item = $('<li class="list-group-item list-group-item-danger"></li>');
-                            $item.html('<strong>' + field + ':</strong> ' + message);
-                            $errorList.append($item);
-                        });
-                    });
-                    $errorDetails.append($errorList);
-                }
-
-                let errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-                errorModal.show();
-
-                $form[0].reset();
-            }
+          if (xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
+            let $errorList = $('<ul class="list-group"></ul>');
+            xhr.responseJSON.errors.forEach(function(error) {
+              $.each(error, function(field, message) {
+                let $item = $('<li class="list-group-item list-group-item-danger"></li>');
+                $item.html('<strong>' + field + ':</strong> ' + message);
+                $errorList.append($item);
+              });
+            });
+            $errorDetails.append($errorList);
           }
+
+          let errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+          errorModal.show();
+
+          $form[0].reset();
+        }
+      }
     });
-});
-  </script>
+  });
+</script>
 {% endblock %}
