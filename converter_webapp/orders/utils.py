@@ -28,7 +28,7 @@ class AlbumExelParser:
             return float(string_value.replace(',', '.'))
         except (ValueError, TypeError):
             self.errors.append(
-                {f'{column}{row_index}': 'Неподдерживаемое форматирование'}
+                {f'{column}{row_index}': 'В ячейке не цифровой символ'}
             )
 
     def get_validate_inventory_num(
