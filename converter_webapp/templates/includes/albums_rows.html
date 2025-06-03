@@ -1,0 +1,15 @@
+                    {% for album in page_obj %}
+                    <tr>
+                        <td>{{ album.customer.name }}</td>
+                        <td>{{ album.obj.name }}</td>
+                        <td>{{ album.get_doc_type_display }}</td>
+                        <td>{{ album.name }}</td>
+                        <td>{{ album.volume|default_if_none:"-" }}</td>
+                        <td>{{ album.filename }}</td>
+                        <td>{{ album.inventory_num }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">Нет записей, соответствующих фильтрам</td>
+                    </tr>
+                    {% endfor %}

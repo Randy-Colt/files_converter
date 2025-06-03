@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block title %}
+  Загрузка файла
+{% endblock %}
+{% block content %}
+  <div class="col d-flex justify-content-center">
+    <div class="card" style="width: 40rem;">
+      <div class="card-header">
+        Загрузите файл для отправки данных в базу
+      </div>
+      <div class="card-body">
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          <div class="invalid-feedback" id="invalid-fileform" aria-hidden="true"></div>
+          {% bootstrap_button button_type="submit" content="Отправить" %}
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success bg-opacity-10 text-success">
+          <h5 class="modal-title">
+            <i class="bi bi-check-circle-fill"></i> Успешная загрузка
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-success">
+            <i class="bi bi-check2-all"></i> <span id="successMessage">Файл успешно обработан</span>
+          </div>
+          <div class="mt-3">
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Всего записей
+                <span class="badge bg-primary rounded-pill" id="totalRecords">0</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+            <i class="bi bi-upload"></i> Загрузить новый файл
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger bg-opacity-10 text-danger">
+          <h5 class="modal-title">
+              <i class="bi bi-exclamation-triangle-fill"></i> Ошибка загрузки
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+          <div class="modal-body">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-octagon"></i> <span id="errorMessage"></span>
+            </div>
+            <div id="errorDetails" class="mt-3"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $('#uploadForm').on('submit', function(e) {
+    e.preventDefault();
+    let $form = $(this);
+    let formData = new FormData(this);
+
+    $.ajax({
+        url: "{% url 'upload' %}",
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        },
+        success: function(data) {
+            if (data.success) {
+                $('#successMessage').text(data.message);
+                $('#totalRecords').text(data.total_records);
+
+                let modal = new bootstrap.Modal(document.getElementById('successModal'));
+                modal.show();
+
+                $form[0].reset();
+            }
+        },
+        error: function(xhr, status, error) {
+          if (xhr.responseJSON.validation_error) {
+                $('#invalid-fileform').text(xhr.responseJSON.error).show();
+            } else {
+                $('#errorMessage').text(xhr.responseJSON.message || 'Произошла ошибка');
+                let $errorDetails = $('#errorDetails');
+                $errorDetails.empty();
+
+                if (xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
+                    let $errorList = $('<ul class="list-group"></ul>');
+                    xhr.responseJSON.errors.forEach(function(error) {
+                        $.each(error, function(field, message) {
+                            let $item = $('<li class="list-group-item list-group-item-danger"></li>');
+                            $item.html('<strong>' + field + ':</strong> ' + message);
+                            $errorList.append($item);
+                        });
+                    });
+                    $errorDetails.append($errorList);
+                }
+
+                let errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                errorModal.show();
+
+                $form[0].reset();
+            }
+          }
+    });
+});
+  </script>
+{% endblock %}

@@ -1,0 +1,2 @@
+class ExelParsingError(Exception):
+    pass
