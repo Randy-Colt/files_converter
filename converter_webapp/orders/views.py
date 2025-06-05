@@ -41,7 +41,6 @@ class UploadExelView(FormView):
     def form_invalid(self, form):
         return JsonResponse(
             {
-                'success': False,
                 'validation_error': True,
                 'error': next(iter(form.errors.items()))[1]
             }, status=400
@@ -88,8 +87,12 @@ class AlbumListView(ListView):
             page_obj = self.get_paginator(
                 self.get_queryset(), self.paginate_by
             ).page(self.request.GET.get('page', 1))
-            table_rows = render_to_string('includes/albums_rows.html', {'page_obj': page_obj})
-            pagination = render_to_string('includes/albums_pagination.html', {'page_obj': page_obj})
+            table_rows = render_to_string(
+                'includes/albums_rows.html', {'page_obj': page_obj}
+            )
+            pagination = render_to_string(
+                'includes/albums_pagination.html', {'page_obj': page_obj}
+            )
             return JsonResponse({
                 'table_rows': table_rows,
                 'pagination': pagination,
